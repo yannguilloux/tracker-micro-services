@@ -1,0 +1,9 @@
+type Event {
+  _id: ID!
+  t: String
+  surl: String
+  ua: String
+  ip: String
+  sid: Int
+  link: Int
+}

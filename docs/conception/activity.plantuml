@@ -1,0 +1,24 @@
+@startuml
+|Client|
+start
+:Recevoir Requête d'Insertion;
+:Vérifier UUID;
+if (UUID fourni ?) then (oui)
+    :Collecter Détails;
+else (non)
+    :Générer UUID Automatique;
+    :Collecter Détails;
+endif
+:Validation des Données;
+if (Données valides ?) then (oui)
+    :Insertion en BDD;
+    if (Insertion réussie ?) then (oui)
+        :Répondre au Client avec UUID et message de succès;
+    else (non)
+        :Répondre au Client avec message d'erreur;
+    endif
+else (non)
+    :Répondre au Client avec message d'erreur;
+endif
+stop
+@enduml

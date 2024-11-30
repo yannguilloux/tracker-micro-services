@@ -1,0 +1,22 @@
+type Website {
+  id: Int!
+  name: String!
+  url: String!
+  email: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  links: [Link]
+  events(limit: Int!): [Event]
+}
+
+input WebsiteInput {
+  name: String!
+  url: String!
+  email: String!
+}
+
+input WebsiteUpdateInput {
+  name: String
+  url: String
+  email: String
+}

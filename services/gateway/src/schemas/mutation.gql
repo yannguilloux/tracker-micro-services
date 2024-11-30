@@ -1,0 +1,11 @@
+type Mutation {
+  createWebsite(input: WebsiteInput!): Website
+  updateWebsite(id: Int!, input: WebsiteInput!): Website
+  deleteWebsite(id: Int!): Website
+
+  createLink(input: LinkInput!): Link
+  updateLink(id: Int!, input: LinkInput!): Link
+  deleteLink(id: Int!): Link
+
+  createVisitor(input: VisitorInput!): Visitor
+}

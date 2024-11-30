@@ -1,0 +1,7 @@
+type Query {
+  healthCheck: String
+  getWebsites(offset: Int, limit: Int!): [Website]
+  getWebsite(id: Int!): Website
+  getVisitors(offset: Int, limit: Int!): [Visitor]
+  getVisitor(id: Int!): Visitor
+}
