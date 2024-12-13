@@ -1,0 +1,39 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Visitor {
+  id        Int      @id @default(autoincrement())
+  uuid      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([uuid], type: Hash)
+}
+
+model Website {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  url       String   @unique
+  email     String   @unique
+  links     Link[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Link {
+  id        Int      @id @default(autoincrement())
+  label     String   
+  url       String
+  website   Website  @relation(fields: [websiteId], references: [id])
+  websiteId Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([label, url])
+  @@index([websiteId], type: Hash)
+}

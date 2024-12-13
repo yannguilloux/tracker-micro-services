@@ -1,0 +1,21 @@
+@startuml
+actor Client
+participant "API REST" as API
+participant "Service d'Insertion" as Service
+participant "Base de Données" as DB
+
+Client -> API: Envoi de la requête d'insertion (UUID, type d'événement, etc.)
+API -> Service: Valider les données
+alt Données valides
+    Service -> Service: Vérifier si UUID fourni
+    alt UUID non fourni
+        Service -> Service: Générer UUID automatique
+    end
+    Service -> DB: Insérer événement avec UUID généré
+    DB --> Service: Réponse d'insertion réussie
+    Service --> API: Répondre avec UUID et message de succès
+else Données invalides
+    Service --> API: Répondre avec message d'erreur
+end
+API --> Client: Réponse (UUID ou message d'erreur)
+@enduml

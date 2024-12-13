@@ -1,0 +1,151 @@
+services:
+  postgres:
+    image: postgres:17.2
+    container_name: postgres-db
+    env_file: services/gateway/.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 5s
+      retries: 10
+      timeout: 5s
+      start_period: 10s
+    networks:
+      - backend
+
+  mongo:
+    image: mongo:8.0.3
+    container_name: mongo-db
+    env_file: services/tracker/.env
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  tracker:
+    build:
+      context: ./services/tracker
+    container_name: tracker
+    env_file: services/tracker/.env
+    ports:
+      - "3333:3333"
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - ./services/tracker:/app
+      - /app/node_modules
+    command: sh -c "npm run mongo:index && npm run dev"
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD", "wget", "--spider", "http://localhost:3333/api/events", "-T", "5", "-O", "/dev/null" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  statistics:
+    build:
+      context: ./services/statistics
+    container_name: statistics
+    env_file: services/statistics/.env
+    ports:
+      - "3001:3001"
+    depends_on:
+      - mongo
+    volumes:
+      - ./services/statistics:/app
+      - /app/node_modules
+    command: [ "npm", "run", "dev" ]
+    networks:
+      - backend
+
+  gateway:
+    build:
+      context: ./services/gateway
+    container_name: gateway
+    env_file: services/gateway/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      tracker:
+        condition: service_healthy
+    volumes:
+      - ./services/gateway:/app
+      - /app/node_modules
+    command: sh -c "npm run prisma:migrate && npm run prisma:seed && npm run dev"
+    networks:
+      - backend
+    healthcheck:
+      test: "wget --header='Content-Type: application/json' --post-data='{\"query\": \"query { healthCheck }\"}' http://localhost:3000/graphql -O -"
+      interval: 10s
+      retries: 3
+      timeout: 5s
+
+  reverseproxy:
+    image: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      gateway:
+        condition: service_healthy
+      tracker:
+        condition: service_healthy
+    networks:
+      - backend
+
+  redis:
+    image: redis:7.2.4-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - backend
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  user-prediction:
+    image: user-prediction:latest
+    container_name: user-prediction-service
+    env_file: services/prediction/.env
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - mongo
+    networks:
+      - backend
+
+volumes:
+  postgres-data:
+    name: trackerapp-postgres-data
+  mongo-data:
+    name: trackerapp-mongo-data
+  redis-data:
+    name: trackerapp-redis-data
+
+networks:
+  backend:

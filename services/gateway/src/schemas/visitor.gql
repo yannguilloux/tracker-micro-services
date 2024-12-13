@@ -1,0 +1,10 @@
+type Visitor {
+  id: Int!
+  uuid: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input VisitorInput {
+  uuid: String!
+}

@@ -1,0 +1,19 @@
+type Link {
+  id: Int!
+  label: String!
+  url: String!
+  website: Website!
+  events(limit: Int!): [Event]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+input LinkInput {
+  label: String!
+  url: String!
+}
+
+input LinkUpdateInput {
+  label: String
+  url: String
+}

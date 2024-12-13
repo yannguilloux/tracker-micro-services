@@ -1,0 +1,12 @@
+###
+POST http://localhost:3000/graphql
+Content-Type: application/json
+
+{
+  "query": "mutation addVisitor($input: VisitorInput!) { createVisitor(input: $input) { uuid } }",
+  "variables": {
+    "input": {
+      "uuid": "0fc9f061-6a63-420c-b712-d2e7c1dee4d4"
+    }
+   }
+}

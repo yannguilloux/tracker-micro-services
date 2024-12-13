@@ -1,0 +1,6 @@
+### CREATE EVENT
+
+GET http://localhost:3333/api/track?type=click&sid=2&link=123
+
+### GET EVENTS
+GET http://localhost:3333/api/events?sids=1,3,5&limit=2

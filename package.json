@@ -1,0 +1,40 @@
+{
+  "name": "o-tracker",
+  "version": "1.0.0",
+  "description": "## Contexte et Énoncé du Projet",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "install": "npm --prefix ./services/gateway install & npm --prefix ./services/database install & npm --prefix ./services/statistics install & npm --prefix ./services/tracker install",
+    "update": "npm --prefix ./services/gateway update & npm --prefix ./services/database update & npm --prefix ./services/statistics update & npm --prefix ./services/tracker update",
+    "build": "npm --prefix ./services/tracker run build & npm --prefix ./services/gateway run build",
+    "dev": "npm --prefix ./services/tracker run dev & npm --prefix ./services/gateway run dev",
+    "start": "npm --prefix ./services/tracker start & npm --prefix ./services/gateway start",
+    "db:deploy": "npm --prefix ./services/database run db:deploy",
+    "db:seeding:sql": "npm --prefix ./services/database run db:seeding:sql",
+    "db:seeding:mongo": "npm --prefix ./services/database run db:seeding:mongo",
+    "db:index:mongo": "npm --prefix ./services/database run db:index:mongo",
+    "lint": "eslint **/src/**/*.ts",
+    "lint:fix": "eslint **/src/**/*.ts --fix",
+    "format": "prettier --write .",
+    "docker:recreate": "docker compose down --volumes --rmi all && docker compose up --build --force-recreate"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@eslint/js": "^9.13.0",
+    "eslint": "^9.13.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "globals": "^15.11.0",
+    "prettier": "3.3.3",
+    "typescript-eslint": "^8.17.0"
+  },
+  "dependencies": {
+    "prisma-redis-middleware": "^1.1.1"
+  }
+}
